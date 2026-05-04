@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@types/react-router-dom": "^5.3.3",
+    "axios": "^1.16.0",
+    "react-router-dom": "^7.14.2",
+    "socket.io-client": "^4.8.3"
+  },
+  "devDependencies": {
+    "@types/socket.io-client": "^1.4.36"
+  }
+}
