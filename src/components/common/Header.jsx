@@ -18,7 +18,10 @@ const Header = () => {
       </div>
       {user && (
         <div className="header-actions">
-          <span>Welcome, {user.username}</span>
+          <span>Welcome, {user.username || user.email}</span>
+          <button className="logout-btn" onClick={() => navigate('/profile')}>
+            Profile
+          </button>
           <button className="logout-btn" onClick={handleLogout}>
             Logout
           </button>

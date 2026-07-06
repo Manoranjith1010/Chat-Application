@@ -32,9 +32,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       setLoading(true);
-      const userData = await authService.login(credentials);
+      const response = await authService.login(credentials);
+      const userData = response.user || response;
       setUser(userData);
-      localStorage.setItem('token', userData.token);
+      localStorage.setItem('token', response.token);
       setError(null);
       return userData;
     } catch (err) {
@@ -49,9 +50,10 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setLoading(true);
-      const newUser = await authService.register(userData);
+      const response = await authService.register(userData);
+      const newUser = response.user || response;
       setUser(newUser);
-      localStorage.setItem('token', newUser.token);
+      localStorage.setItem('token', response.token);
       setError(null);
       return newUser;
     } catch (err) {

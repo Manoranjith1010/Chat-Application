@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { SocketProvider } from './contexts/SocketContext';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
+import Profile from './components/Auth/Profile';
 import ChatRoom from './components/Chat/ChatRoom';
 import RoomList from './components/common/RoomList';
 import Header from './components/common/Header';
@@ -47,6 +48,7 @@ const AuthContent = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/profile" element={<Profile />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
