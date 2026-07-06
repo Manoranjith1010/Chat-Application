@@ -1,22 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useSocket } from '../../hooks/useSocket';
-import { SOCKET_EVENTS, emitSocketEvent } from '../../services/socketService';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { SocketContext } from '../../contexts/SocketContext';
+import { SOCKET_EVENTS } from '../../services/socketService';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
 
 const ChatRoom = ({ roomId }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { socket } = useSocket ? { socket: null } : {};
+  const { socket } = useContext(SocketContext);
   const socketRef = useRef(null);
-
-  // Get socket from context manually
-  const getSocket = () => {
-    if (typeof window !== 'undefined') {
-      // In a real app, you'd get this from context
-      return socketRef.current;
-    }
-  };
 
   useEffect(() => {
     if (!roomId) return;
@@ -44,24 +36,56 @@ const ChatRoom = ({ roomId }) => {
   const sendMessage = (content) => {
     if (!socket) {
       console.error('Socket not connected');
-      return;
+      return Promise.reject(new Error('Socket not connected'));
     }
 
-    // Emit message event
+    // Emit message event with expected server payload
     socket.emit(SOCKET_EVENTS.SEND_MESSAGE, {
-      roomId,
-      content,
+      roomName: roomId,
+      message: content,
       timestamp: new Date().toISOString()
     });
 
     // Optimistically add message to UI
     setMessages(prev => [...prev, {
-      content,
+      message: content,
       timestamp: new Date().toISOString(),
-      user: 'You',
+      username: 'You',
       isOwn: true
     }]);
+
+    return Promise.resolve();
   };
+
+  // Attach socket listeners for incoming messages and room data
+  useEffect(() => {
+    if (!socket) return;
+
+    // keep a ref to socket
+    socketRef.current = socket;
+
+    const onMessage = (data) => {
+      // server sends { username, message, timestamp, userId }
+      handleMessageReceived(data);
+    };
+
+    const onUserList = (users) => {
+      // ignore for now or could set member list
+      console.log('userList', users);
+    };
+
+    socket.on(SOCKET_EVENTS.RECEIVE_MESSAGE, onMessage);
+    socket.on(SOCKET_EVENTS.USER_LIST, onUserList);
+
+    // Join room when socket connects or roomId changes
+    socket.emit(SOCKET_EVENTS.JOIN_ROOM, roomId);
+
+    return () => {
+      socket.off(SOCKET_EVENTS.RECEIVE_MESSAGE, onMessage);
+      socket.off(SOCKET_EVENTS.USER_LIST, onUserList);
+      socket.emit(SOCKET_EVENTS.LEAVE_ROOM, roomId);
+    };
+  }, [socket, roomId]);
 
   if (loading) {
     return <div className="loading">Loading chat room...</div>;
