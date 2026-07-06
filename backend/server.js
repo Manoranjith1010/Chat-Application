@@ -10,9 +10,18 @@ dotenv.config();
 
 const app = express();
 const httpServer = createServer(app);
+// Allow both localhost and 127.0.0.1 origins during development
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const FRONTEND_HOSTS = [FRONTEND_URL, FRONTEND_URL.replace('localhost', '127.0.0.1')];
+
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      // allow requests with no origin like curl/postman
+      if (!origin) return callback(null, true);
+      if (FRONTEND_HOSTS.includes(origin)) return callback(null, true);
+      return callback(new Error('CORS policy violation'));
+    },
     credentials: true,
     methods: ['GET', 'POST']
   }
@@ -20,7 +29,11 @@ const io = new Server(httpServer, {
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (FRONTEND_HOSTS.includes(origin)) return callback(null, true);
+    return callback(new Error('CORS policy violation'));
+  },
   credentials: true
 }));
 app.use(express.json());
