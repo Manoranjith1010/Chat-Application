@@ -1,180 +1,161 @@
-# ChatApp - Real-time Chat Application
+# Chat Application
 
-A modern, real-time chat application built with React, Vite, and Socket.io.
+A full-stack real-time chat app with a React frontend and an Express + Socket.IO backend. Users can register, log in, join chat rooms, and exchange messages instantly.
 
 ## Features
 
-- **Real-time Messaging**: Instant message delivery using Socket.io
-- **User Authentication**: Secure login and registration system
-- **Chat Rooms**: Join multiple chat rooms for organized conversations
-- **Modern UI**: Clean and responsive interface
-- **Typing Indicators**: See when others are typing
-- **User List**: View active users in each room
-- **Message History**: Load previous messages in each room
+- User registration and login
+- JWT-based authentication
+- Real-time messaging in chat rooms
+- Room joining and leaving
+- User presence updates
+- Responsive UI built with React and Vite
+
+## Tech Stack
+
+### Frontend
+- React
+- Vite
+- React Router
+- Socket.IO client
+- Axios
+
+### Backend
+- Node.js
+- Express
+- Socket.IO
+- JSON Web Tokens
+- bcryptjs
 
 ## Project Structure
 
-```
-ChatApp/
-├── public/
+```text
+Chat-Application/
+├── backend/
+│   ├── server.js
+│   └── package.json
 ├── src/
 │   ├── components/
-│   │   ├── Auth/
-│   │   │   ├── Login.jsx
-│   │   │   └── Register.jsx
-│   │   ├── Chat/
-│   │   │   ├── ChatRoom.jsx
-│   │   │   ├── MessageList.jsx
-│   │   │   └── MessageInput.jsx
-│   │   └── common/
-│   │       ├── Header.jsx
-│   │       └── RoomList.jsx
 │   ├── contexts/
-│   │   ├── AuthContext.jsx
-│   │   └── SocketContext.jsx
 │   ├── hooks/
-│   │   ├── useAuth.js
-│   │   └── useSocket.js
 │   ├── services/
-│   │   ├── authService.js
-│   │   └── socketService.js
 │   ├── App.jsx
-│   ├── main.jsx
-│   └── index.css
-├── index.html
+│   └── main.jsx
 ├── package.json
-└── vite.config.js
+├── vite.config.js
+└── README.md
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (version 16 or higher)
-- npm or yarn
+- Node.js 18+
+- npm
 
-### Installation
+### 1. Install frontend dependencies
 
-1. Install dependencies:
 ```bash
 npm install
 ```
 
-2. Configure environment variables by creating a `.env` file:
+### 2. Install backend dependencies
+
+```bash
+cd backend
+npm install
+cd ..
+```
+
+### 3. Configure environment variables
+
+Create a root environment file for the frontend:
+
+```bash
+cp .env.example .env.local
+```
+
+Example values:
+
 ```env
 VITE_API_URL=http://localhost:3001/api/auth
 VITE_SOCKET_URL=http://localhost:3001
 ```
 
-### Development
+Create a backend environment file if needed:
 
-Run the development server:
+```bash
+cd backend
+cat > .env <<'EOF'
+PORT=3001
+FRONTEND_URL=http://localhost:5173
+JWT_SECRET=your-secret-key-change-in-production
+EOF
+```
+
+### 4. Start the application
+
+Start the backend:
+
+```bash
+cd backend
+npm run dev
+```
+
+In a second terminal, start the frontend:
+
 ```bash
 npm run dev
 ```
 
-The application will open at `http://localhost:5173` by default.
+Open the app at http://localhost:5173.
 
-### Production Build
+## Available Scripts
 
-Build for production:
+### Root project
+
 ```bash
-npm run build
+npm run dev      # start the Vite frontend
+npm run build    # build the production bundle
+npm run preview  # preview the built app
 ```
 
-Preview production build:
+### Backend
+
 ```bash
-npm run preview
+cd backend
+npm run dev      # start the backend in watch mode
+npm run start    # start the backend normally
 ```
 
-## Architecture
+## Backend Endpoints
 
-### State Management
+The backend provides:
 
-- **AuthContext**: Manages user authentication state and methods
-- **SocketContext**: Manages Socket.io connection and connection state
-- **Custom Hooks**: `useAuth` and `useSocket` for easy access to contexts
+- POST /api/auth/register
+- POST /api/auth/login
+- GET /api/auth/validate
+- GET /health
 
-### Real-time Communication
+## Socket.IO Events
 
-The application uses Socket.io for real-time messaging:
-- `joinRoom`: Join a specific chat room
-- `sendMessage`: Send a message to a room
-- `message`: Receive messages in real-time
-- `userJoined`: Notification when a user joins a room
-- `userLeft`: Notification when a user leaves a room
+The app uses the following Socket.IO events:
 
-### Services
+- joinRoom
+- leaveRoom
+- sendMessage
+- getRooms
+- message
+- roomsList
+- userJoined
+- userLeft
+- userList
 
-- **authService**: Handles authentication API calls (login, register, token validation)
-- **socketService**: Provides Socket.io event constants and helper functions
+## Notes
 
-## Best Practices Implemented
-
-1. **Component Composition**: Small, focused components for better maintainability
-2. **Custom Hooks**: Reusable logic extracted into custom hooks
-3. **Context API**: Centralized state management for authentication and socket
-4. **Error Handling**: Proper error boundaries and user feedback
-5. **Loading States**: Visual feedback during async operations
-6. **Security**: Token-based authentication with secure storage
-7. **Performance**: Optimized re-renders and efficient socket event handling
-8. **Responsive Design**: Mobile-friendly interface
-
-## Backend Requirements
-
-The backend server should implement:
-
-### Authentication Endpoints
-- `POST /api/auth/login` - User login
-- `POST /api/auth/register` - User registration
-- `GET /api/auth/validate` - Token validation
-
-### Socket.io Events
-- `joinRoom` - Join a chat room
-- `leaveRoom` - Leave a chat room
-- `sendMessage` - Send a message
-- `getRooms` - Get list of available rooms
-- `message` - Receive incoming messages
-- `roomsList` - Receive list of rooms
-- `userJoined` - Notification of user joining
-- `userLeft` - Notification of user leaving
-
-## Environment Variables
-
-- `VITE_API_URL`: Backend API URL for authentication (default: `http://localhost:3001/api/auth`)
-- `VITE_SOCKET_URL`: Backend Socket.io server URL (default: `http://localhost:3001`)
-
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
+- The backend currently stores users and rooms in memory, so data will reset when the server restarts.
+- For production use, replace the in-memory storage with a real database and a stronger JWT secret.
 
 ## License
 
-This project is open source and available under the MIT License.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## Troubleshooting
-
-### Socket Connection Issues
-- Ensure the backend server is running
-- Check that `VITE_SOCKET_URL` environment variable is correctly set
-- Verify CORS settings on the backend
-
-### Authentication Issues
-- Clear browser cache and localStorage
-- Verify backend authentication endpoints are implemented
-- Check token format and expiration
-
-### Build Issues
-- Clear `node_modules` and `package-lock.json`, then reinstall dependencies
-- Ensure Node.js version is 16 or higher
-
-## Support
-
-For issues and questions, please create an issue in the repository.
+This project is available for learning and development purposes.
