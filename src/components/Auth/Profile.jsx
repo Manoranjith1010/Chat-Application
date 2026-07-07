@@ -1,9 +1,10 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 const Profile = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   if (!user) {
     return (
@@ -16,6 +17,11 @@ const Profile = () => {
       </div>
     );
   }
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const initials = (user.username || user.email || 'U')
     .charAt(0)
@@ -60,7 +66,7 @@ const Profile = () => {
 
         <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1rem' }}>
           <Link to="/" className="btn btn-primary">Back to Chat</Link>
-          <button className="btn btn-secondary" onClick={logout}>Logout</button>
+          <button className="btn btn-secondary" onClick={handleLogout}>Logout</button>
         </div>
       </div>
     </div>
