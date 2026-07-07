@@ -26,12 +26,12 @@ const MessageList = ({ messages }) => {
           className={`message ${message.isOwn ? 'own' : ''}`}
         >
           <div className="message-header">
-            <span className="message-user">{message.user}</span>
+            <span className="message-user">{message.username || message.user || 'Anonymous'}</span>
             <span className="message-time">
-              {new Date(message.timestamp).toLocaleTimeString()}
+              {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </span>
           </div>
-          <div className="message-content">{message.content}</div>
+          <div className="message-content">{message.message || message.content}</div>
         </div>
       ))}
       <div ref={messagesEndRef} />
