@@ -36,9 +36,18 @@ const ChatRoom = ({ roomId }) => {
   const sendMessage = (content) => {
     if (!socket) {
       console.error('Socket not connected');
+      alert('Not connected to chat server. Please refresh the page.');
       return Promise.reject(new Error('Socket not connected'));
     }
 
+    if (!roomId) {
+      console.error('No room selected');
+      alert('Please select a room first.');
+      return Promise.reject(new Error('No room selected'));
+    }
+
+    console.log('Sending message to room:', roomId, 'Content:', content);
+    
     // Emit message event with expected server payload
     socket.emit(SOCKET_EVENTS.SEND_MESSAGE, {
       roomName: roomId,
