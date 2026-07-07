@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { SocketProvider } from './contexts/SocketContext';
@@ -10,20 +10,9 @@ import RoomList from './components/common/RoomList';
 import Header from './components/common/Header';
 import { useAuth } from './hooks/useAuth';
 
-// Protected route wrapper
-const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <div className="loading">Loading...</div>;
-  }
-
-  return user ? children : <Navigate to="/login" replace />;
-};
-
-// Main chat container
-const ChatContainer = () => {
-  const [selectedRoom, setSelectedRoom] = React.useState(null);
+// Main chat page
+const ChatPage = () => {
+  const [selectedRoom, setSelectedRoom] = useState(null);
 
   return (
     <div className="app">
@@ -42,19 +31,7 @@ const ChatContainer = () => {
   );
 };
 
-// Auth routes
-const AuthContent = () => {
-  return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
-  );
-};
-
-// Main app content
+// Main app content - handles routing based on auth state
 const AppContent = () => {
   const { user, loading } = useAuth();
 
@@ -62,7 +39,23 @@ const AppContent = () => {
     return <div className="loading">Loading...</div>;
   }
 
-  return user ? <ChatContainer /> : <AuthContent />;
+  return (
+    <Routes>
+      {user ? (
+        <>
+          <Route path="/" element={<ChatPage />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </>
+      ) : (
+        <>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </>
+      )}
+    </Routes>
+  );
 };
 
 // Main App component
