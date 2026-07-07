@@ -5,13 +5,13 @@ const RoomList = ({ onRoomSelect, selectedRoomId }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate fetching rooms from server
+    // Fetch rooms from server
     const mockRooms = [
-      { id: 1, name: 'General' },
-      { id: 2, name: 'Random' },
-      { id: 3, name: 'Tech Talk' },
-      { id: 4, name: 'Gaming' },
-      { id: 5, name: 'Sports' }
+      { id: 'general', name: 'General', displayName: 'General' },
+      { id: 'random', name: 'Random', displayName: 'Random' },
+      { id: 'tech-talk', name: 'Tech Talk', displayName: 'Tech Talk' },
+      { id: 'gaming', name: 'Gaming', displayName: 'Gaming' },
+      { id: 'sports', name: 'Sports', displayName: 'Sports' }
     ];
     
     setRooms(mockRooms);
@@ -19,12 +19,12 @@ const RoomList = ({ onRoomSelect, selectedRoomId }) => {
   }, []);
 
   if (loading) {
-    return <div className="room-list">Loading rooms...</div>;
+    return <div className="room-list" style={{ padding: '1rem', textAlign: 'center' }}>Loading rooms...</div>;
   }
 
   return (
     <div className="room-list">
-      <div style={{ padding: '12px 16px', fontWeight: 'bold', color: '#333' }}>
+      <div style={{ padding: '12px 16px', fontWeight: 'bold', color: '#333', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
         Rooms
       </div>
       {rooms.map(room => (
@@ -32,8 +32,10 @@ const RoomList = ({ onRoomSelect, selectedRoomId }) => {
           key={room.id}
           className={`room-item ${selectedRoomId === room.id ? 'active' : ''}`}
           onClick={() => onRoomSelect(room.id)}
+          style={{ cursor: 'pointer', transition: 'all 0.2s ease' }}
+          title={`Click to join ${room.displayName}`}
         >
-          # {room.name}
+          # {room.displayName}
         </div>
       ))}
     </div>
